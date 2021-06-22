@@ -58,9 +58,13 @@ func (r *ReconcileCertificateRequest) IssueCertificate(reqLogger logr.Logger, cr
 	if proceed {
 		reqLogger.Info("write permissions for DNS has been validated")
 	} else {
-		err = errors.New("failed to get write access to DNS record")
-		reqLogger.Error(err, "failed to get write access to DNS record")
-		return err
+		if err != nil {
+			reqLogger.Error(err, "failed to get write access to DNS record")
+			return err
+		} else {
+			err = errors.New("No error but proceed is false")
+			reqLogger.Error(err, "Certificate unabled to be issued due to unkown issue")
+		}
 	}
 
 	leClient, err := leclient.NewClient(r.client)
